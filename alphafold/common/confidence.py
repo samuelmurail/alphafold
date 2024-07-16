@@ -200,7 +200,6 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
-  jax.debug.print('asym_id_shape={asym_id_shape}',asym_id_max=jnp.extract(asym_id.shape)
   max_asym_id = asym_id.max()
   jax.debug.print('max_asym_id={max_asym_id}',max_asym_id=max_asym_id)
   max_asym_id_as_int = int(max_asym_id[0])
