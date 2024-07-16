@@ -193,9 +193,14 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
     _np, _softmax = jnp, jax.nn.softmax
   else:
     _np, _softmax = np, scipy.special.softmax
+  jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   if chain_num is None:
     chain_num = 1
+  jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
+
+  jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
+  jax.debug.print('asym_id_shape={asym_id_shape}',asym_id_shape=asym_id.shape)
 
   # residue_weights has to be in [0, 1], but can be floating-point, i.e. the
   # exp. resolved head's probability.
@@ -225,6 +230,9 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   
   def get_cross_iptm(i, j):
     pair_mask = jnp.logical_and(i * jnp.ones((num_res))[:, None] == asym_id[None, :] , j*jnp.ones((num_res))[None, :] == asym_id[:, None])
+    jax.debug.print('pair_mask={pair_mask}',pair_mask=pair_mask)
+    jax.debug.print('pair_mask_shape={pair_mask_shape}',pair_mask_shape=pair_mask.shape)
+    jax.debug.print('pair_mask_sum={pair_mask_sum}',pair_mask_sum=pair_mask_sum.sum())
     chain_chain_predicted_tm_term = predicted_tm_term * pair_mask
     pair_residue_weights = pair_mask * (residue_weights[None, :] * residue_weights[:, None])
     normed_residue_mask = pair_residue_weights / (1e-8 + pair_residue_weights.sum(-1, keepdims=True))
@@ -286,4 +294,5 @@ def get_confidence_metrics(prediction_result, mask, rank_by = "plddt", use_jnp=F
   else:
     mean_score = confidence_metrics["mean_plddt"]
   confidence_metrics["ranking_confidence"] = mean_score
-  return confidence_metrics
+  return confidence_metrics  jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
+  # jax.debug.print('residue weights = {x}',x=residue_weights)
