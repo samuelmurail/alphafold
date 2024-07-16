@@ -295,4 +295,3 @@ def get_confidence_metrics(prediction_result, mask, rank_by = "plddt", use_jnp=F
     mean_score = confidence_metrics["mean_plddt"]
   confidence_metrics["ranking_confidence"] = mean_score
   return confidence_metrics  jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
-  # jax.debug.print('residue weights = {x}',x=residue_weights)
