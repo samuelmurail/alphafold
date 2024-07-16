@@ -200,7 +200,11 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
-  jax.debug.print('asym_id_shape={asym_id_shape}',asym_id_shape=asym_id.shape)
+  jax.debug.print('asym_id_shape={asym_id_shape}',asym_id_max=jnp.extract(asym_id.shape)
+  max_asym_id = asym_id.max()
+  jax.debug.print('max_asym_id={max_asym_id}',max_asym_id=max_asym_id)
+  max_asym_id_as_int = int(max_asym_id[0])
+  jax.debug.print('max_asym_id_as_int={max_asym_id_as_int}',max_asym_id_as_int=max_asym_id_as_int)
 
   # residue_weights has to be in [0, 1], but can be floating-point, i.e. the
   # exp. resolved head's probability.
@@ -241,7 +245,8 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
 
   iptm_matrix_list = []
 
-  for i in jnp.arange(chain_num):
+#  for i in jnp.arange(chain_num):
+  for i in jnp.arange(max_asym_id_as_int):
       local_list = []
       for j in jnp.arange(chain_num):
           local_list.append(get_cross_iptm(i, j))
