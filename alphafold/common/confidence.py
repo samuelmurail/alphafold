@@ -232,7 +232,7 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
     pair_mask = jnp.logical_and(i * jnp.ones((num_res))[:, None] == asym_id[None, :] , j*jnp.ones((num_res))[None, :] == asym_id[:, None])
     jax.debug.print('pair_mask={pair_mask}',pair_mask=pair_mask)
     jax.debug.print('pair_mask_shape={pair_mask_shape}',pair_mask_shape=pair_mask.shape)
-    jax.debug.print('pair_mask_sum={pair_mask_sum}',pair_mask_sum=pair_mask_sum.sum())
+    jax.debug.print('pair_mask_sum={pair_mask_sum}',pair_mask_sum=pair_mask.sum())
     chain_chain_predicted_tm_term = predicted_tm_term * pair_mask
     pair_residue_weights = pair_mask * (residue_weights[None, :] * residue_weights[:, None])
     normed_residue_mask = pair_residue_weights / (1e-8 + pair_residue_weights.sum(-1, keepdims=True))
