@@ -20,12 +20,9 @@ import numpy as np
 from alphafold.common import residue_constants
 import scipy.special
 
-@jax.jit
-def numpy_callback(x):
-  # Need to forward-declare the shape & dtype of the expected output.
-  result_shape = jax.core.ShapedArray(x.shape, x.dtype)
-  return jax.pure_callback(np.positive, result_shape, x)
-
+@partial(jit, static_argnums=1)
+def func(x, axis):
+  return x.max(axis)
 
 
 def compute_tol(prev_pos, current_pos, mask, use_jnp=False):
@@ -208,9 +205,7 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
-  chain_nums = numpy_callback(asym_id)   # Return the max_asym_id to be converted outside the JAX-traced function
-  print('chain_nums=', chain_nums)
-  chain_num =  max(chain_nums)
+  chain_num = func(asym_id, -1)   # Return the max_asym_id to be converted outside the JAX-traced function
   print('chain_num=', chain_num)
 #  batch = {'asym_id': asym_id}
 #  apply_fn_jit = jax.jit(apply_fn)
