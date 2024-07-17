@@ -20,13 +20,13 @@ import numpy as np
 from alphafold.common import residue_constants
 import scipy.special
 
-def apply_fn(batch):
-    asym_id = batch['asym_id']
-    jax.debug.print('asym_id={asym_id}', asym_id=asym_id)
-    max_asym_id = asym_id.max()
-    jax.debug.print('max_asym_id={max_asym_id}', max_asym_id=max_asym_id)
-    # Return the max_asym_id to be converted outside the JAX-traced function
-    return max_asym_id
+@jax.jit
+def numpy_callback(x):
+  # Need to forward-declare the shape & dtype of the expected output.
+  result_shape = jax.core.ShapedArray(x.shape, x.dtype)
+  return jax.pure_callback(np.positive, result_shape, x)
+
+
 
 def compute_tol(prev_pos, current_pos, mask, use_jnp=False):
     # Early stopping criteria based on criteria used in
@@ -208,11 +208,14 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
-
-  batch = {'asym_id': asym_id}
-  apply_fn_jit = jax.jit(apply_fn)
-  max_asym_id_traced = apply_fn_jit(batch)
-  max_asym_id_as_int = int(max_asym_id_traced)
+  chain_nums = numpy_callback(asym_id)   # Return the max_asym_id to be converted outside the JAX-traced function
+  print('chain_nums=', chain_nums)
+  chain_num =  max(chain_nums)
+  print('chain_num=', chain_num)
+#  batch = {'asym_id': asym_id}
+#  apply_fn_jit = jax.jit(apply_fn)
+#  max_asym_id_traced = apply_fn_jit(batch)
+#  max_asym_id_as_int = int(max_asym_id_traced)
 
 #  jax.debug.print('max_asym_id_as_int={max_asym_id_as_int}',max_asym_id_as_int=max_asym_id_as_int)
 
@@ -255,8 +258,7 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
 
   iptm_matrix_list = []
 
-#  for i in jnp.arange(chain_num):
-  for i in jnp.arange(max_asym_id_as_int):
+  for i in jnp.arange(chain_num):
       local_list = []
       for j in jnp.arange(chain_num):
           local_list.append(get_cross_iptm(i, j))
