@@ -202,7 +202,7 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
   max_asym_id = asym_id.max()
   jax.debug.print('max_asym_id={max_asym_id}',max_asym_id=max_asym_id)
-  max_asym_id_as_int = int(max_asym_id[0])
+  max_asym_id_as_int = int(max_asym_id)
   jax.debug.print('max_asym_id_as_int={max_asym_id_as_int}',max_asym_id_as_int=max_asym_id_as_int)
 
   # residue_weights has to be in [0, 1], but can be floating-point, i.e. the
