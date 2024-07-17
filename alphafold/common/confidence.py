@@ -14,6 +14,7 @@
 
 """Functions for processing confidence metrics."""
 from functools import partial
+from jax import jit
 import jax.numpy as jnp
 import jax
 import numpy as np
