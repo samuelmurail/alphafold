@@ -205,7 +205,7 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
   max_asym_id = asym_id.max()
   jax.debug.print('max_asym_id={max_asym_id}',max_asym_id=max_asym_id)
-  batch = {'asym_id': max_asym_id)}
+  batch = {'asym_id': max_asym_id}
   apply_fn_jit = jax.jit(apply_fn)
 #  max_asym_id_as_int = int(max_asym_id)
   max_asym_id_as_int = apply_fn_jit(batch)
