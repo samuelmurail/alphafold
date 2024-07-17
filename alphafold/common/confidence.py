@@ -21,7 +21,12 @@ from alphafold.common import residue_constants
 import scipy.special
 
 def apply_fn(batch):
-    max_asym_id_as_int = max_asym_id.astype(int)
+    asym_id = batch['asym_id']
+    jax.debug.print('asym_id={asym_id}', asym_id=asym_id)
+    max_asym_id = asym_id.max()
+    jax.debug.print('max_asym_id={max_asym_id}', max_asym_id=max_asym_id)
+    # Return the max_asym_id to be converted outside the JAX-traced function
+    return max_asym_id
 
 def compute_tol(prev_pos, current_pos, mask, use_jnp=False):
     # Early stopping criteria based on criteria used in
@@ -203,13 +208,13 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
-  max_asym_id = asym_id.max()
-  jax.debug.print('max_asym_id={max_asym_id}',max_asym_id=max_asym_id)
-  batch = {'asym_id': max_asym_id}
+
+  batch = {'asym_id': asym_id}
   apply_fn_jit = jax.jit(apply_fn)
-#  max_asym_id_as_int = int(max_asym_id)
-  max_asym_id_as_int = apply_fn_jit(batch)
-  jax.debug.print('max_asym_id_as_int={max_asym_id_as_int}',max_asym_id_as_int=max_asym_id_as_int)
+  max_asym_id_traced = apply_fn_jit(batch)
+  max_asym_id_as_int = int(max_asym_id_traced)
+
+#  jax.debug.print('max_asym_id_as_int={max_asym_id_as_int}',max_asym_id_as_int=max_asym_id_as_int)
 
   # residue_weights has to be in [0, 1], but can be floating-point, i.e. the
   # exp. resolved head's probability.
