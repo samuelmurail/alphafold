@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """Functions for processing confidence metrics."""
-
+from functools import partial
 import jax.numpy as jnp
 import jax
 import numpy as np
