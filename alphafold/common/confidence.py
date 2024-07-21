@@ -27,7 +27,7 @@ from functools import partial
 
 ###
 def func(x):
-  return x.max(-1).astype(x.dtype)
+  return x.max().astype(x.dtype)
 
 @jax.jit
 def numpy_random_like(x):
