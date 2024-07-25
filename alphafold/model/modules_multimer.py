@@ -405,11 +405,11 @@ class AlphaFold(hk.Module):
   """AlphaFold-Multimer model with recycling.
   """
 
-  def __init__(self, config, name='alphafold'):
+  def __init__(self, config,chain_num, name='alphafold'):
     super().__init__(name=name)
     self.config = config
     self.global_config = config.global_config
-
+    self.chain_num = chain_num
   def __call__(
       self,
       batch,
@@ -418,6 +418,7 @@ class AlphaFold(hk.Module):
       safe_key=None):
 
     c = self.config
+    chain_num = self.chain_num
     impl = AlphaFoldIteration(c, self.global_config)
 
     if safe_key is None:
@@ -460,9 +461,6 @@ class AlphaFold(hk.Module):
     
     if not return_representations:
       del ret['representations']
-
-    # Extract chain NUM
-    chain_num = c.embeddings_and_evoformer.max_relative_chain + 1
 
     # add confidence metrics
     ret.update(confidence.get_confidence_metrics(

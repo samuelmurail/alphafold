@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """Functions for processing confidence metrics."""
+from jax import debug
 from functools import partial
 from jax import jit
 import jax.numpy as jnp
@@ -21,17 +22,7 @@ import numpy as np
 from alphafold.common import residue_constants
 import scipy.special
 ###
-from jax.experimental import io_callback
-from functools import partial
 
-
-###
-def func(x):
-  return x.max().astype(x.dtype)
-
-@jax.jit
-def numpy_random_like(x):
-  return io_callback(func, x, x)
 
 
 
@@ -208,16 +199,10 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
     _np, _softmax = jnp, jax.nn.softmax
   else:
     _np, _softmax = np, scipy.special.softmax
-  jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
   if chain_num is None:
     chain_num = 1
-  jax.debug.print('chain_num={chain_num}',chain_num=chain_num)
 
-  jax.debug.print('asym_id={asym_id}',asym_id=asym_id)
-  chain_num= numpy_random_like(asym_id)
-
-  print('chain_num=', chain_num)
 #  batch = {'asym_id': asym_id}
 #  apply_fn_jit = jax.jit(apply_fn)
 #  max_asym_id_traced = apply_fn_jit(batch)
@@ -253,9 +238,6 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
   
   def get_cross_iptm(i, j):
     pair_mask = jnp.logical_and(i * jnp.ones((num_res))[:, None] == asym_id[None, :] , j*jnp.ones((num_res))[None, :] == asym_id[:, None])
-    jax.debug.print('pair_mask={pair_mask}',pair_mask=pair_mask)
-    jax.debug.print('pair_mask_shape={pair_mask_shape}',pair_mask_shape=pair_mask.shape)
-    jax.debug.print('pair_mask_sum={pair_mask_sum}',pair_mask_sum=pair_mask.sum())
     chain_chain_predicted_tm_term = predicted_tm_term * pair_mask
     pair_residue_weights = pair_mask * (residue_weights[None, :] * residue_weights[:, None])
     normed_residue_mask = pair_residue_weights / (1e-8 + pair_residue_weights.sum(-1, keepdims=True))
