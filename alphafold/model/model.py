@@ -35,15 +35,17 @@ class RunModel:
   def __init__(self,
                config: ml_collections.ConfigDict,
                params: Optional[Mapping[str, Mapping[str, np.ndarray]]] = None,
-               is_training = False):
+               is_training = False,
+               chain_num=1):
     
     self.config = config
     self.params = params
     self.multimer_mode = config.model.global_config.multimer_mode
+    self.chain_num = chain_num
 
     if self.multimer_mode:
       def _forward_fn(batch):
-        model = modules_multimer.AlphaFold(self.config.model)
+        model = modules_multimer.AlphaFold(self.config.model,self.chain_num)
         return model(batch, is_training=is_training)
     else:
       def _forward_fn(batch):
@@ -134,6 +136,7 @@ class RunModel:
     Returns:
       A dictionary of model outputs.
     """
+
     self.init_params(feat)
     logging.info('Running predict with shape(feat) = %s',
                  tree.map_structure(lambda x: x.shape, feat))
@@ -146,6 +149,7 @@ class RunModel:
     else:
       num_ensemble = self.config.data.eval.num_ensemble
       L = aatype.shape[1]
+
     
     # initialize
 
@@ -169,6 +173,7 @@ class RunModel:
 
     # initialize random key
     key = jax.random.PRNGKey(random_seed)
+
     
     # iterate through recyckes
     for r in range(num_iters):      
@@ -197,6 +202,5 @@ class RunModel:
           break
         if r > 0 and result["tol"] < self.config.model.recycle_early_stop_tolerance:
           break
-
     logging.info('Output shape was %s', tree.map_structure(lambda x: x.shape, result))
     return result, r
