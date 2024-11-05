@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='alphafold-colabfold',
-    version='2.3.6',
+    version='2.3.8',
     long_description_content_type='text/markdown',
     description='An implementation of the inference pipeline of AlphaFold v2.3.1. '
     'This is a completely new model that was entered as AlphaFold2 in CASP14 '
@@ -26,7 +26,7 @@ setup(
     author='DeepMind',
     author_email='alphafold@deepmind.com',
     license='Apache License, Version 2.0',
-    url='https://github.com/sokrypton/alphafold',
+    url='https://github.com/ntnn19/alphafold/tree/chain_iptm',
     packages=find_packages(),
     install_requires=[
         'absl-py',

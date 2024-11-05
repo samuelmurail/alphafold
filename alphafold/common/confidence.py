@@ -13,12 +13,18 @@
 # limitations under the License.
 
 """Functions for processing confidence metrics."""
-
+from jax import debug
+from functools import partial
+from jax import jit
 import jax.numpy as jnp
 import jax
 import numpy as np
 from alphafold.common import residue_constants
 import scipy.special
+###
+
+
+
 
 def compute_tol(prev_pos, current_pos, mask, use_jnp=False):
     # Early stopping criteria based on criteria used in
@@ -196,6 +202,13 @@ def predicted_tm_score_chain(logits, breaks, residue_weights = None,
 
   if chain_num is None:
     chain_num = 1
+
+#  batch = {'asym_id': asym_id}
+#  apply_fn_jit = jax.jit(apply_fn)
+#  max_asym_id_traced = apply_fn_jit(batch)
+#  max_asym_id_as_int = int(max_asym_id_traced)
+
+#  jax.debug.print('max_asym_id_as_int={max_asym_id_as_int}',max_asym_id_as_int=max_asym_id_as_int)
 
   # residue_weights has to be in [0, 1], but can be floating-point, i.e. the
   # exp. resolved head's probability.
